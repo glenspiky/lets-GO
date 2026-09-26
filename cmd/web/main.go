@@ -7,12 +7,14 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/glenspiky/snippetbox/pkg/models/psql"
 	_ "github.com/lib/pq" // To register the driver.
 )
 
 type application struct {
 	errorLog *log.Logger
 	infolog  *log.Logger
+	snippets *psql.SnippetModel
 }
 
 func main() {
@@ -42,6 +44,7 @@ func main() {
 	app := &application{
 		errorLog: errorLog,
 		infolog:  infolog,
+		snippets: &psql.SnippetModel{DB: db},
 	}
 
 	srv := &http.Server{Addr: *addr, ErrorLog: errorLog, Handler: app.routes()}
