@@ -2,6 +2,7 @@ package psql
 
 import (
 	"database/sql"
+	"errors"
 
 	"github.com/glenspiky/snippetbox/pkg/models"
 )
@@ -27,7 +28,23 @@ func (m *SnippetModel) Insert(title, content, expires string) (int, error) {
 	return int(id), nil
 }
 func (m *SnippetModel) Get(id int) (*models.Snippet, error) {
-	return nil, nil
+	stmt := `SELECT id, title,content,created,expires FROM snippets WHERE expires > CURRENT_TIMESTAMP AND id = $1`
+
+	row := m.DB.QueryRow(stmt, id)
+
+	//initialize a pointer to a new zeroed snippt struct
+	s := &models.Snippet{}
+
+	err := row.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, models.ErrNoRecord
+		} else {
+			return nil, err
+		}
+	}
+	return s, nil
 
 }
 func (m *SnippetModel) Latest() ([]*models.Snippet, error) {

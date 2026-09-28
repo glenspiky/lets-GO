@@ -10,7 +10,7 @@ var ErrNoRecord = errors.New("models: no matching models found")
 type Snippet struct {
 	ID      int
 	Title   string
-	content string
-	created time.Time
+	Content string
+	Created time.Time
 	Expires time.Time
 }
